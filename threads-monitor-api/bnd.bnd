@@ -1,0 +1,11 @@
+Bundle-Name: threads-monitor-api
+Bundle-SymbolicName: threads-monitor-api
+Bundle-Version: 1.0.0
+Export-Package: \
+    ru.snowreplicator.threads_monitor.constants,\
+    ru.snowreplicator.threads_monitor.comparator,\
+    ru.snowreplicator.threads_monitor.exception,\
+    ru.snowreplicator.threads_monitor.model,\
+    ru.snowreplicator.threads_monitor.service,\
+    ru.snowreplicator.threads_monitor.service.persistence,\
+    ru.snowreplicator.threads_monitor.util

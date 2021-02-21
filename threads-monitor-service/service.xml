@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 7.0.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_7_0_0.dtd">
+
+<service-builder package-path="ru.snowreplicator.threads_monitor">
+    <namespace>THREAD</namespace>
+    
+    <!-- настройки отображения таблицы процессов -->
+    <entity name="ThreadTableProps" table="planner.thread_ThreadTableProps" local-service="true" remote-service="true">
+        <column name="userId"       type="long"     primary="true" />   <!-- id пользователя -->
+        <column name="columnId"     type="int"      primary="true" />   <!-- id поля поля -->
+        <column name="show"         type="boolean"                 />   <!-- признак показывать/непоказывать -->
+        <column name="sortType"     type="int"                     />   <!-- тип сортировки (0-не сортировать, 1-по возрастанию, 2-по убыванию) -->
+        <column name="width"        type="double"                  />   <!-- ширина колонки -->
+        <column name="num"          type="int"                     />   <!-- порядок отображения колонок -->
+    
+        <!-- поиск по id юзера -->
+        <finder name="UserId" return-type="Collection">
+            <finder-column name="userId" />
+        </finder>
+    </entity>
+
+    <!--
+    <exceptions>
+    </exceptions>
+    -->
+
+</service-builder>

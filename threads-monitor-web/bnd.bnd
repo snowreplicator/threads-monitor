@@ -1,0 +1,4 @@
+Bundle-Name: threads-monitor-web
+Bundle-SymbolicName: threads-monitor-web
+Bundle-Version: 1.0.0
+Liferay-JS-Config: /META-INF/resources/js/config.js
