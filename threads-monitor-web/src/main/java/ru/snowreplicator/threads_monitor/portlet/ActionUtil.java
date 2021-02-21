@@ -9,7 +9,7 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 
-import ru.snowreplicator.threads_monitor.constants.JavaThreadsMonitorKeys;
+import ru.snowreplicator.threads_monitor.constants.ThreadsMonitorKeys;
 
 public class ActionUtil {
 
@@ -38,7 +38,7 @@ public class ActionUtil {
         // title
         {
             JSONObject columnJsonObject = JSONFactoryUtil.createJSONObject();
-            columnJsonObject.put("title", JavaThreadsMonitorKeys.translate(locale, "thread-title-id"));
+            columnJsonObject.put("title", ThreadsMonitorKeys.translate(locale, "thread-title-id"));
             columnJsonObject.put("field", "id");
             columnJsonObject.put("sorter", "number");
             columnsJsonArray.put(columnJsonObject);
@@ -46,7 +46,7 @@ public class ActionUtil {
         // priority
         {
             JSONObject columnJsonObject = JSONFactoryUtil.createJSONObject();
-            columnJsonObject.put("title", JavaThreadsMonitorKeys.translate(locale, "thread-title-priority"));
+            columnJsonObject.put("title", ThreadsMonitorKeys.translate(locale, "thread-title-priority"));
             columnJsonObject.put("field", "priority");
             columnJsonObject.put("sorter", "number");
             columnsJsonArray.put(columnJsonObject);
@@ -54,7 +54,7 @@ public class ActionUtil {
         // state
         {
             JSONObject columnJsonObject = JSONFactoryUtil.createJSONObject();
-            columnJsonObject.put("title", JavaThreadsMonitorKeys.translate(locale, "thread-title-state"));
+            columnJsonObject.put("title", ThreadsMonitorKeys.translate(locale, "thread-title-state"));
             columnJsonObject.put("field", "state");
             columnJsonObject.put("sorter", "string");
             columnsJsonArray.put(columnJsonObject);
@@ -62,7 +62,7 @@ public class ActionUtil {
         // name
         {
             JSONObject columnJsonObject = JSONFactoryUtil.createJSONObject();
-            columnJsonObject.put("title", JavaThreadsMonitorKeys.translate(locale, "thread-title-name"));
+            columnJsonObject.put("title", ThreadsMonitorKeys.translate(locale, "thread-title-name"));
             columnJsonObject.put("field", "name");
             columnJsonObject.put("sorter", "string");
             columnsJsonArray.put(columnJsonObject);

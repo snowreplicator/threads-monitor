@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<model-hints>
+	<model name="ru.snowreplicator.threads_monitor.model.ThreadTableProps">
+		<field name="userId" type="long" />
+		<field name="columnId" type="int" />
+		<field name="show" type="boolean" />
+		<field name="sortType" type="int" />
+		<field name="width" type="double" />
+		<field name="num" type="int" />
+	</model>
+</model-hints>
