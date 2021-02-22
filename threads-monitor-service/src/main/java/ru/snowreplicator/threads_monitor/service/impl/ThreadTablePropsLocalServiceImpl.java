@@ -1,6 +1,7 @@
 package ru.snowreplicator.threads_monitor.service.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -9,11 +10,14 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.StringUtil;
 
 import ru.snowreplicator.threads_monitor.comparator.ThreadTablePropsComparator;
 import ru.snowreplicator.threads_monitor.constants.ThreadsMonitorConst;
 import ru.snowreplicator.threads_monitor.exception.NoSuchThreadTablePropsException;
 import ru.snowreplicator.threads_monitor.exception.WrongColumnIdException;
+import ru.snowreplicator.threads_monitor.exception.WrongColumnsOrderException;
 import ru.snowreplicator.threads_monitor.model.ThreadTableProps;
 import ru.snowreplicator.threads_monitor.service.base.ThreadTablePropsLocalServiceBaseImpl;
 import ru.snowreplicator.threads_monitor.service.persistence.ThreadTablePropsPK;
@@ -153,6 +157,31 @@ public class ThreadTablePropsLocalServiceImpl extends ThreadTablePropsLocalServi
                 threadTablePropsPersistence.update(threadTableProps);
             }
         }
+    }
+
+    // сохранить настройку порядка следования столбцов табулятора
+    public List<ThreadTableProps> saveColumnsOrder(String columnsOrder, long userId) throws PortalException {
+        String columnsNewOrder[] = StringUtil.split(columnsOrder, StringPool.COMMA);
+        String columnsDefaultOrder[] = ThreadsMonitorConst.getColumns();
+
+        if (columnsDefaultOrder.length != columnsNewOrder.length) throw new WrongColumnsOrderException();
+        for (String defaultColumn : columnsDefaultOrder) {
+            boolean contains = Arrays.stream(columnsNewOrder).anyMatch(defaultColumn::equalsIgnoreCase);
+            if (!contains) throw new WrongColumnsOrderException();
+        }
+
+        saveDefaultColumnParamsForAbsentColumns(userId);
+
+        int num = 0;
+        List<ThreadTableProps> threadTablePropsList = new ArrayList<>();
+        for (String columnId : columnsNewOrder) {
+            num++;
+            ThreadTableProps threadTableProps = getThreadTableProps(userId, columnId);
+            threadTableProps.setNum(num);
+            threadTableProps = threadTablePropsPersistence.update(threadTableProps);
+            threadTablePropsList.add(threadTableProps);
+        }
+        return threadTablePropsList;
     }
 
 }

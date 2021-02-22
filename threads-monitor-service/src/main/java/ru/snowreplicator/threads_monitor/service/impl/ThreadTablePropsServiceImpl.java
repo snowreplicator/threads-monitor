@@ -1,5 +1,7 @@
 package ru.snowreplicator.threads_monitor.service.impl;
 
+import java.util.List;
+
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -25,6 +27,13 @@ public class ThreadTablePropsServiceImpl extends ThreadTablePropsServiceBaseImpl
         SessionUtil.setSessionThreadLocal(serviceContext);
         ThreadTableProps threadTableProps = threadTablePropsLocalService.saveColumnWidth(columnId, width, getUserId());
         return threadTableProps;
+    }
+
+    // сохранить настройку порядка следования столбцов табулятора
+    public List<ThreadTableProps> saveColumnsOrder(String columnsOrder, ServiceContext serviceContext) throws PortalException {
+        SessionUtil.setSessionThreadLocal(serviceContext);
+        List<ThreadTableProps> threadTablePropsList = threadTablePropsLocalService.saveColumnsOrder(columnsOrder, getUserId());
+        return threadTablePropsList;
     }
 
 }

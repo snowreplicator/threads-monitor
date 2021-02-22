@@ -47,6 +47,7 @@ public class ActionUtil {
             columnJsonObject.put("field",   threadTableProps.getColumnId());
             columnJsonObject.put("sorter",  ThreadsMonitorConst.getColumnSorter(threadTableProps.getColumnId()));
             columnJsonObject.put("width",   ThreadsMonitorConst.getColumnWidth(threadTableProps.getWidth()));
+            columnJsonObject.put("visible", threadTableProps.getShow());
             columnsJsonArray.put(columnJsonObject);
 
             // текущий параметр начальной сортировки

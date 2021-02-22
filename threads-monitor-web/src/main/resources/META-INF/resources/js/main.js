@@ -12,6 +12,7 @@ AUI.add(
 
         var SAVE_SORT_TIMEOUT = 200; // задержка сохранения сортировки, мс (чтобы не долбиться в базу слишком часто)
         var SAVE_WIDTH_TIMEOUT = 200; // задержка сохранения ширины, мс (чтобы не долбиться в базу слишком часто)
+        var SAVE_ORDER_TIMEOUT = 200; // задержка сохранения порядка столбцов, мс (чтобы не долбиться в базу слишком часто)
 
         var toInt = function (value) {
             return Lang.toInt(value, 10, 0);
@@ -107,7 +108,8 @@ AUI.add(
                             columns:        threadsMonitorData.columnsData.columns,
                             initialSort:    threadsMonitorData.columnsData.initialSort,
                             tableData:      threadsMonitorData.threadsData.length > 0 ? threadsMonitorData.threadsData : new Array(),
-                            columnMinWidth: columnMinWidth
+                            columnMinWidth: columnMinWidth,
+                            movableColumns: true
                         };
 
                         instance.drawTabulator(threadsMonitorDataConfiguration);
@@ -125,6 +127,7 @@ AUI.add(
                                 data:           threadsMonitorDataConfiguration.tableData,
                                 columns:        threadsMonitorDataConfiguration.columns,
                                 initialSort:    threadsMonitorDataConfiguration.initialSort,
+                                movableColumns: threadsMonitorDataConfiguration.movableColumns,
                                 // ------ test data +++
                                 /*
                                 columns: [
@@ -171,6 +174,9 @@ AUI.add(
                                 },
                                 columnResized:function(column) {
                                     instance.columnResized(column);
+                                },
+                                columnMoved:function(column, columns) {
+                                    instance.columnMoved(column, columns);
                                 }
                             });
 
@@ -216,6 +222,30 @@ AUI.add(
                     saveColumnWidth: function (columnId, width) {
                         var data = {};
                         data['/thread.threadtableprops/save-column-width'] = { columnId: columnId, width: width };
+
+                        Util.invokeService(data, {
+                            failure: function(event) {
+                            },
+                            success: function() {
+                            }
+                        });
+                    },
+
+                    // функция срабатывающая при изменении порядка столбцов таблицы
+                    columnMoved: function (column, columns) {
+                        var instance = this;
+                        var newColumnOrder = new Array();
+                        for (var i=0; i < columns.length; i++) {
+                            newColumnOrder.push(columns[i].getField());
+                        }
+                        if (instance.saveColumnOrderTimeOut) clearTimeout(this.saveColumnOrderTimeOut);
+                        instance.saveColumnOrderTimeOut = setTimeout(instance.saveColumnsOrder, SAVE_ORDER_TIMEOUT, newColumnOrder.join());
+                    },
+
+                    // сохранить настройку указывающую в каком порядке должны следовать друг за другом столбцы табулятора
+                    saveColumnsOrder: function (columnOrder) {
+                        var data = {};
+                        data['/thread.threadtableprops/save-columns-order'] = { columnsOrder: columnOrder };
 
                         Util.invokeService(data, {
                             failure: function(event) {

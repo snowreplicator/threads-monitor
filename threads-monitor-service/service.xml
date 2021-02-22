@@ -21,6 +21,7 @@
 
     <exceptions>
         <exception>WrongColumnId</exception>
+        <exception>WrongColumnsOrder</exception>
     </exceptions>
 
 </service-builder>
