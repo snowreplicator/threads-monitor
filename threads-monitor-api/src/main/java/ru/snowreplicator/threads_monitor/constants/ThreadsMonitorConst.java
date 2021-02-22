@@ -95,4 +95,8 @@ public class ThreadsMonitorConst {
         return COLUMN_WIDTH_DEFAULT;
     }
 
+    // минимальное количество записей на странице табулятора
+    public final static int MIN_PAGE_SIZE = 5;
+
+
 }

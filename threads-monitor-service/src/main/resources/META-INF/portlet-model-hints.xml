@@ -11,4 +11,8 @@
 		<field name="width" type="int" />
 		<field name="num" type="int" />
 	</model>
+	<model name="ru.snowreplicator.threads_monitor.model.ThreadTableSettings">
+		<field name="userId" type="long" />
+		<field name="pageSize" type="int" />
+	</model>
 </model-hints>

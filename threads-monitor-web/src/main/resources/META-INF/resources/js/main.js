@@ -10,9 +10,12 @@ AUI.add(
 
         var STR_BLANK = '';
 
-        var SAVE_SORT_TIMEOUT = 200; // задержка сохранения сортировки, мс (чтобы не долбиться в базу слишком часто)
+        var SAVE_SORT_TIMEOUT  = 200; // задержка сохранения сортировки, мс (чтобы не долбиться в базу слишком часто)
         var SAVE_WIDTH_TIMEOUT = 200; // задержка сохранения ширины, мс (чтобы не долбиться в базу слишком часто)
         var SAVE_ORDER_TIMEOUT = 200; // задержка сохранения порядка столбцов, мс (чтобы не долбиться в базу слишком часто)
+        var SAVE_PAGE_SIZE_TIMEOUT = 200; // задержка сохранения кол-ва записей на странце, мс (чтобы не долбиться в базу слишком часто)
+
+        var PAGINATION_SIZE_SELECTOR = [5, 10, 25, 50, 75, 100]; // кол-во записей для выбора в пагинаторе
 
         var toInt = function (value) {
             return Lang.toInt(value, 10, 0);
@@ -100,16 +103,16 @@ AUI.add(
                         var threadsMonitorData = instance.parseThreadsMonitorDataFromJsonString(instance.get('threadsMonitorDataJsonString'));
                         if (!threadsMonitorData) return;
 
-                        var height = '500px';
-
                         var threadsMonitorDataConfiguration = {
                             tabulatorPlace: namespace + 'tabulatorPlace',
-                            height:         height,
-                            columns:        threadsMonitorData.columnsData.columns,
-                            initialSort:    threadsMonitorData.columnsData.initialSort,
-                            tableData:      threadsMonitorData.threadsData.length > 0 ? threadsMonitorData.threadsData : new Array(),
-                            columnMinWidth: columnMinWidth,
-                            movableColumns: true
+                            columns:                threadsMonitorData.columnsData.columns,
+                            initialSort:            threadsMonitorData.columnsData.initialSort,
+                            tableData:              threadsMonitorData.threadsData.length > 0 ? threadsMonitorData.threadsData : new Array(),
+                            columnMinWidth:         columnMinWidth,
+                            movableColumns:         true,
+                            pagination:             'local',
+                            paginationSize:         threadsMonitorData.pageSize,
+                            paginationSizeSelector: PAGINATION_SIZE_SELECTOR
                         };
 
                         instance.drawTabulator(threadsMonitorDataConfiguration);
@@ -121,62 +124,27 @@ AUI.add(
                         console.log('drawTabulator - threadsMonitorDataConfiguration = ' + JSON.stringify(threadsMonitorDataConfiguration));
 
                         Liferay.SnowReplicator.ThreadsMonitor.Tabulator(function (Tabulator) {
-
                             var threadsMonitorDataTable = new Tabulator('#' + threadsMonitorDataConfiguration.tabulatorPlace, {
-                                height:         threadsMonitorDataConfiguration.height,
-                                data:           threadsMonitorDataConfiguration.tableData,
-                                columns:        threadsMonitorDataConfiguration.columns,
-                                initialSort:    threadsMonitorDataConfiguration.initialSort,
-                                movableColumns: threadsMonitorDataConfiguration.movableColumns,
-                                // ------ test data +++
-                                /*
-                                columns: [
-                                    {
-                                        "field": "id",
-                                        "sorter": "number",
-                                        "width": 70,
-                                        "title": "Id",
-                                        headerDblClick:function(e, column){
-                                            //e - the click event object
-                                            //column - column component
-                                            console.log('headerDblClick');
-                                        }
-                                    }, {
-                                        "field": "name",
-                                        "sorter": "string",
-                                        "width": 620,
-                                        "title": "Наименование"
-                                    }, {
-                                        "field": "priority",
-                                        "sorter": "number",
-                                        "width": 120,
-                                        "title": "Приоритет"
-                                    }, {
-                                        "field": "state",
-                                        "sorter": "string",
-                                        "width": 170,
-                                        "title": "Состояние"
-                                    }
-
-                                ],
-                                initialSort: [
-                                    {
-                                        "column": "priority",
-                                        "dir": "asc"
-                                    }
-                                ],
-
-                                 */
-                                // ------ test data ---
-                                columnMinWidth: threadsMonitorDataConfiguration.columnMinWidth,
+                                height:                 threadsMonitorDataConfiguration.height,
+                                data:                   threadsMonitorDataConfiguration.tableData,
+                                columns:                threadsMonitorDataConfiguration.columns,
+                                initialSort:            threadsMonitorDataConfiguration.initialSort,
+                                movableColumns:         threadsMonitorDataConfiguration.movableColumns,
+                                columnMinWidth:         threadsMonitorDataConfiguration.columnMinWidth,
+                                pagination:             threadsMonitorDataConfiguration.pagination,
+                                paginationSize:         threadsMonitorDataConfiguration.paginationSize,
+                                paginationSizeSelector: threadsMonitorDataConfiguration.paginationSizeSelector,
                                 dataSorted: function (sorters, rows) {
                                     instance.dataSorted(sorters, rows);
                                 },
-                                columnResized:function(column) {
-                                    instance.columnResized(column);
+                                columnResized: function (column) {
+                                    instance.columnResized (column);
                                 },
-                                columnMoved:function(column, columns) {
+                                columnMoved: function (column, columns) {
                                     instance.columnMoved(column, columns);
+                                },
+                                pageLoaded: function (pageno) {
+                                    instance.pageLoaded(this);
                                 }
                             });
 
@@ -246,6 +214,27 @@ AUI.add(
                     saveColumnsOrder: function (columnOrder) {
                         var data = {};
                         data['/thread.threadtableprops/save-columns-order'] = { columnsOrder: columnOrder };
+
+                        Util.invokeService(data, {
+                            failure: function(event) {
+                            },
+                            success: function() {
+                            }
+                        });
+                    },
+
+                    // функция срабатывающая при окончании загрузки страницы
+                    pageLoaded: function (tabulator) {
+                        var instance = this;
+                        var pageSize = tabulator.getPageSize();
+                        if (instance.savePageSizeTimeOut) clearTimeout(this.savePageSizeTimeOut);
+                        instance.savePageSizeTimeOut = setTimeout(instance.savePageSize, SAVE_PAGE_SIZE_TIMEOUT, pageSize);
+                    },
+
+                    // сохранить настройку указывающую сколько записей показывать в таблице
+                    savePageSize: function (pageSize) {
+                        var data = {};
+                        data['/thread.threadtablesettings/save-page-size'] = { pageSize: pageSize };
 
                         Util.invokeService(data, {
                             failure: function(event) {

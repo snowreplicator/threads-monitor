@@ -3,7 +3,7 @@
 
 <service-builder package-path="ru.snowreplicator.threads_monitor">
     <namespace>THREAD</namespace>
-    
+
     <!-- настройки отображения таблицы процессов -->
     <entity name="ThreadTableProps" table="planner.thread_ThreadTableProps" local-service="true" remote-service="true">
         <column name="userId"       type="long"     primary="true" />   <!-- id пользователя -->
@@ -19,9 +19,21 @@
         </finder>
     </entity>
 
+    <!-- настройки отображения таблицы процессов -->
+    <entity name="ThreadTableSettings" table="planner.thread_ThreadTableSettings" local-service="true" remote-service="true">
+        <column name="userId"       type="long"     primary="true" />   <!-- id пользователя -->
+        <column name="pageSize"     type="int"                     />   <!-- кол-во строк отображаемых на странице -->
+        
+        <!-- поиск по id юзера -->
+        <finder name="UserId" return-type="ThreadTableSettings" unique="true">
+            <finder-column name="userId" /> 
+        </finder>
+    </entity>
+
     <exceptions>
         <exception>WrongColumnId</exception>
         <exception>WrongColumnsOrder</exception>
+        <exception>WrongPageSize</exception>
     </exceptions>
 
 </service-builder>

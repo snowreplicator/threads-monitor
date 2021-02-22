@@ -13,7 +13,9 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import ru.snowreplicator.threads_monitor.constants.ThreadsMonitorConst;
 import ru.snowreplicator.threads_monitor.constants.ThreadsMonitorKeys;
 import ru.snowreplicator.threads_monitor.model.ThreadTableProps;
+import ru.snowreplicator.threads_monitor.model.ThreadTableSettings;
 import ru.snowreplicator.threads_monitor.service.ThreadTablePropsLocalServiceUtil;
+import ru.snowreplicator.threads_monitor.service.ThreadTableSettingsLocalServiceUtil;
 
 public class ActionUtil {
 
@@ -67,10 +69,13 @@ public class ActionUtil {
 
     // получить объект с данными для отображения табулятора со списком процессов
     public static JSONObject threadsMonitorDataJsonObject(long userId, long groupId, Locale locale) {
+        ThreadTableSettings threadTableSettings = ThreadTableSettingsLocalServiceUtil.fetchThreadTableSettings(userId);
+        int pageSize = threadTableSettings == null ? ThreadsMonitorConst.MIN_PAGE_SIZE : threadTableSettings.getPageSize();
         JSONArray threadsData = getThreadsData();
         JSONObject columnsData = getColumnsData(userId, groupId, locale);
 
         JSONObject threadsMonitorDataJsonObject = JSONFactoryUtil.createJSONObject();
+        threadsMonitorDataJsonObject.put("pageSize",    pageSize);
         threadsMonitorDataJsonObject.put("threadsData", threadsData);
         threadsMonitorDataJsonObject.put("columnsData", columnsData);
         return threadsMonitorDataJsonObject;
