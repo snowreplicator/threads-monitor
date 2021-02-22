@@ -6,6 +6,7 @@
             namespace:                          '<%= ThreadsMonitorKeys.THREADS_MONITOR_NAMESPACE %>',
             portletId:                          '<%= ThreadsMonitorKeys.THREADS_MONITOR_PORTLET %>',
             groupId:                             <%= themeDisplay.getScopeGroupId() %>,
-            threadsMonitorDataJsonString:       '<%= HtmlUtil.escapeJS(threadsMonitorDataJsonString) %>'
+            threadsMonitorDataJsonString:       '<%= HtmlUtil.escapeJS(threadsMonitorDataJsonString) %>',
+            columnMinWidth:                      <%= ThreadsMonitorConst.COLUMN_MIN_WIDTH %>
         });
     </aui:script>

@@ -10,6 +10,9 @@ AUI.add(
 
         var STR_BLANK = '';
 
+        var SAVE_SORT_TIMEOUT = 200; // задержка сохранения сортировки, мс (чтобы не долбиться в базу слишком часто)
+        var SAVE_WIDTH_TIMEOUT = 200; // задержка сохранения ширины, мс (чтобы не долбиться в базу слишком часто)
+
         var toInt = function (value) {
             return Lang.toInt(value, 10, 0);
         };
@@ -43,7 +46,13 @@ AUI.add(
 
                     threadsMonitorDataJsonString: {
                         value: STR_BLANK
+                    },
+
+                    columnMinWidth: {
+                        setter: toInt,
+                        validator: isNumber
                     }
+
                 },
 
                 NAME: 'mainJS',
@@ -83,22 +92,22 @@ AUI.add(
 
                     // действия после загрузки
                     afterLoad: function () {
-                        console.log('after load');
                         var instance = this;
                         var namespace = instance.get('namespace');
+                        var columnMinWidth = instance.get('columnMinWidth');
 
                         var threadsMonitorData = instance.parseThreadsMonitorDataFromJsonString(instance.get('threadsMonitorDataJsonString'));
                         if (!threadsMonitorData) return;
 
                         var height = '500px';
-                        var tableData = threadsMonitorData.threadsData.length > 0 ? threadsMonitorData.threadsData : new Array();
-                        var columns =  threadsMonitorData.columnsData.columns;
 
                         var threadsMonitorDataConfiguration = {
                             tabulatorPlace: namespace + 'tabulatorPlace',
-                            height: height,
-                            columns: columns,
-                            tableData: tableData
+                            height:         height,
+                            columns:        threadsMonitorData.columnsData.columns,
+                            initialSort:    threadsMonitorData.columnsData.initialSort,
+                            tableData:      threadsMonitorData.threadsData.length > 0 ? threadsMonitorData.threadsData : new Array(),
+                            columnMinWidth: columnMinWidth
                         };
 
                         instance.drawTabulator(threadsMonitorDataConfiguration);
@@ -112,12 +121,107 @@ AUI.add(
                         Liferay.SnowReplicator.ThreadsMonitor.Tabulator(function (Tabulator) {
 
                             var threadsMonitorDataTable = new Tabulator('#' + threadsMonitorDataConfiguration.tabulatorPlace, {
-                                height: threadsMonitorDataConfiguration.height,
-                                data: threadsMonitorDataConfiguration.tableData,
-                                columns: threadsMonitorDataConfiguration.columns
+                                height:         threadsMonitorDataConfiguration.height,
+                                data:           threadsMonitorDataConfiguration.tableData,
+                                columns:        threadsMonitorDataConfiguration.columns,
+                                initialSort:    threadsMonitorDataConfiguration.initialSort,
+                                // ------ test data +++
+                                /*
+                                columns: [
+                                    {
+                                        "field": "id",
+                                        "sorter": "number",
+                                        "width": 70,
+                                        "title": "Id",
+                                        headerDblClick:function(e, column){
+                                            //e - the click event object
+                                            //column - column component
+                                            console.log('headerDblClick');
+                                        }
+                                    }, {
+                                        "field": "name",
+                                        "sorter": "string",
+                                        "width": 620,
+                                        "title": "Наименование"
+                                    }, {
+                                        "field": "priority",
+                                        "sorter": "number",
+                                        "width": 120,
+                                        "title": "Приоритет"
+                                    }, {
+                                        "field": "state",
+                                        "sorter": "string",
+                                        "width": 170,
+                                        "title": "Состояние"
+                                    }
+
+                                ],
+                                initialSort: [
+                                    {
+                                        "column": "priority",
+                                        "dir": "asc"
+                                    }
+                                ],
+
+                                 */
+                                // ------ test data ---
+                                columnMinWidth: threadsMonitorDataConfiguration.columnMinWidth,
+                                dataSorted: function (sorters, rows) {
+                                    instance.dataSorted(sorters, rows);
+                                },
+                                columnResized:function(column) {
+                                    instance.columnResized(column);
+                                }
                             });
 
                             instance.set('threadsMonitorDataTable', threadsMonitorDataTable);
+                        });
+                    },
+
+                    // функция срабатывающая при изменении сортировки столбца
+                    dataSorted: function (sorters, rows) {
+                        var instance = this;
+                        for (var i=0; i < sorters.length; i++) {
+                            var sorter = sorters[i];
+                            if (sorter) {
+                                if (instance.saveColumnSortDirTimeOut) clearTimeout(this.saveColumnSortDirTimeOut);
+                                instance.saveColumnSortDirTimeOut = setTimeout(instance.saveColumnSortDir, SAVE_SORT_TIMEOUT, sorter.field, sorter.dir);
+                            }
+                        }
+                    },
+
+                    // сохранить настройку сортировки для указанного столбца
+                    saveColumnSortDir: function (columnId, dir) {
+                        var data = {};
+                        data['/thread.threadtableprops/save-column-sort-dir'] = { columnId: columnId, dir: dir };
+
+                        Util.invokeService(data, {
+                            failure: function(event) {
+                            },
+                            success: function() {
+                            }
+                        });
+                    },
+
+                    // функция срабатывающая при изменении ширины столбца
+                    columnResized: function (column) {
+                        var instance = this;
+                        if (column) {
+                            if (instance.saveColumnWidthTimeOut) clearTimeout(this.saveColumnWidthTimeOut);
+                            instance.saveColumnWidthTimeOut = setTimeout(instance.saveColumnWidth, SAVE_WIDTH_TIMEOUT, column.getField(), column.getWidth());
+                        }
+                    },
+
+                    // сохранить настройку ширины для указанного столбца
+                    saveColumnWidth: function (columnId, width) {
+                        var data = {};
+                        data['/thread.threadtableprops/save-column-width'] = { columnId: columnId, width: width };
+
+                        Util.invokeService(data, {
+                            failure: function(event) {
+                            },
+                            success: function() {
+                            }
                         });
                     },
 

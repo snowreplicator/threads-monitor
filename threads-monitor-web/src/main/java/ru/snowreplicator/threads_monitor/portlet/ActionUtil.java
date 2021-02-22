@@ -38,19 +38,29 @@ public class ActionUtil {
     public static JSONObject getColumnsData(long userId, long groupId, Locale locale) {
         List<ThreadTableProps> ThreadTablePropsList = ThreadTablePropsLocalServiceUtil.getColumns(userId);
 
+        JSONArray initialSortJsonArray = JSONFactoryUtil.createJSONArray();
         JSONArray columnsJsonArray = JSONFactoryUtil.createJSONArray();
-        for (ThreadTableProps ThreadTableProps : ThreadTablePropsList) {
+        for (ThreadTableProps threadTableProps : ThreadTablePropsList) {
+            // текущий параметр столбца
             JSONObject columnJsonObject = JSONFactoryUtil.createJSONObject();
-            columnJsonObject.put("title",   ThreadsMonitorKeys.translate(locale, ThreadsMonitorConst.getColumnName(ThreadTableProps.getColumnId())));
-            columnJsonObject.put("field",   ThreadTableProps.getColumnId());
-            columnJsonObject.put("sorter",  ThreadsMonitorConst.getColumnSorter(ThreadTableProps.getColumnId()));
-            columnJsonObject.put("width",   ThreadsMonitorConst.getColumnWidth(ThreadTableProps.getWidth()));
-            columnJsonObject.put("dir",     ThreadsMonitorConst.getColumnSortDir(ThreadTableProps.getSortType()));
+            columnJsonObject.put("title",   ThreadsMonitorKeys.translate(locale, ThreadsMonitorConst.getColumnName(threadTableProps.getColumnId())));
+            columnJsonObject.put("field",   threadTableProps.getColumnId());
+            columnJsonObject.put("sorter",  ThreadsMonitorConst.getColumnSorter(threadTableProps.getColumnId()));
+            columnJsonObject.put("width",   ThreadsMonitorConst.getColumnWidth(threadTableProps.getWidth()));
             columnsJsonArray.put(columnJsonObject);
+
+            // текущий параметр начальной сортировки
+            if (!ThreadsMonitorConst.getColumnSortDir(threadTableProps.getSortType()).isEmpty()) {
+                JSONObject initialSortJsonObject = JSONFactoryUtil.createJSONObject();
+                initialSortJsonObject.put("column", threadTableProps.getColumnId());
+                initialSortJsonObject.put("dir",    ThreadsMonitorConst.getColumnSortDir(threadTableProps.getSortType()));
+                initialSortJsonArray.put(initialSortJsonObject);
+            }
         }
 
         JSONObject columnsJsonObject = JSONFactoryUtil.createJSONObject();
         columnsJsonObject.put("columns", columnsJsonArray);
+        columnsJsonObject.put("initialSort", initialSortJsonArray);
         return columnsJsonObject;
     }
 
@@ -68,7 +78,6 @@ public class ActionUtil {
     // получить объект с данными для отображения табулятора со списком процессов (сериализованный в строку json)
     public static String threadsMonitorDataJsonString(long userId, long groupId, Locale locale) {
         JSONObject threadsMonitorDataJsonObject = threadsMonitorDataJsonObject(userId, groupId, locale);
-        _log.info("threadsMonitorDataJsonObject = " + threadsMonitorDataJsonObject.toJSONString()); // !!!!! delete
         return threadsMonitorDataJsonObject.toJSONString();
     }
 

@@ -10,7 +10,7 @@
         <column name="columnId"     type="String"   primary="true" />   <!-- id поля поля -->
         <column name="show"         type="boolean"                 />   <!-- признак показывать/непоказывать -->
         <column name="sortType"     type="int"                     />   <!-- тип сортировки (0-не сортировать, 1-по возрастанию, 2-по убыванию) -->
-        <column name="width"        type="double"                  />   <!-- ширина колонки -->
+        <column name="width"        type="int"                     />   <!-- ширина колонки -->
         <column name="num"          type="int"                     />   <!-- порядок отображения колонок -->
     
         <!-- поиск по id юзера -->
@@ -19,9 +19,8 @@
         </finder>
     </entity>
 
-    <!--
     <exceptions>
+        <exception>WrongColumnId</exception>
     </exceptions>
-    -->
 
 </service-builder>

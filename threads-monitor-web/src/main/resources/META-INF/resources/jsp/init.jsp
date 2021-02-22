@@ -35,7 +35,8 @@
 <%@ page import="com.liferay.portal.kernel.util.PropsKeys" %>
 <%@ page import="com.liferay.portal.kernel.util.WebKeys"%>
 
-<%@ page import="ru.snowreplicator.threads_monitor.constants.ThreadsMonitorKeys"%>
+<%@ page import="ru.snowreplicator.threads_monitor.constants.ThreadsMonitorConst" %>
+<%@ page import="ru.snowreplicator.threads_monitor.constants.ThreadsMonitorKeys" %>
 <%@ page import="ru.snowreplicator.threads_monitor.portlet.ActionUtil" %>
 
 <liferay-frontend:defineObjects />

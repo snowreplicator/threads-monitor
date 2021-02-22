@@ -8,7 +8,7 @@
 		</field>
 		<field name="show" type="boolean" />
 		<field name="sortType" type="int" />
-		<field name="width" type="double" />
+		<field name="width" type="int" />
 		<field name="num" type="int" />
 	</model>
 </model-hints>

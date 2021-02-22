@@ -1,5 +1,7 @@
 package ru.snowreplicator.threads_monitor.constants;
 
+import java.util.Arrays;
+
 import com.liferay.portal.kernel.util.StringPool;
 
 public class ThreadsMonitorConst {
@@ -27,6 +29,12 @@ public class ThreadsMonitorConst {
         return "unknown-field";
     }
 
+    // проверка валидного задания типа столбца табулятора
+    public static boolean validateColumnId(String columnId) {
+        String columns[] = getColumns();
+        return Arrays.asList(columns).contains(columnId);
+    }
+
     // сортировка полей табулятора
     public final static int COLUMN_SORT_NONE    = 0;    // сортировка не задана
     public final static int COLUMN_SORT_ASC     = 1;    // по возрастанию
@@ -45,6 +53,13 @@ public class ThreadsMonitorConst {
         return StringPool.BLANK;
     }
 
+    // получить направление сортировки из табулятора
+    public static int getColumnSortDir(String dir) {
+        if (dir.equalsIgnoreCase(DIR_ASC)) return COLUMN_SORT_ASC;
+        if (dir.equalsIgnoreCase(DIR_DESC)) return COLUMN_SORT_DESC;
+        return COLUMN_SORT_NONE;
+    }
+
     // получить сортировальщик данных в столбце
     public static String getColumnSorter(String columnId) {
         switch (columnId) {
@@ -59,23 +74,23 @@ public class ThreadsMonitorConst {
     }
 
     // ширина столбцов табулятора по умолчанию
-    public final static double COLUMN_WIDTH_DEFAULT = 300.0;
+    public final static int COLUMN_WIDTH_DEFAULT = 300;
     // минимально допустимая ширина столбцов табулятора
-    public final static double COLUMN_MIN_WIDTH = 30.0;
+    public final static int COLUMN_MIN_WIDTH = 10;
 
     // получить ширину столбца табулятора
-    public static double getColumnWidth(double width) {
+    public static int getColumnWidth(int width) {
         if (width < COLUMN_MIN_WIDTH) width = COLUMN_MIN_WIDTH;
         return width;
     }
 
     // получить ширину столбца табулятора по умолчанию
-    public static double getColumnDefaultWidth(String columnId) {
+    public static int getColumnDefaultWidth(String columnId) {
         switch (columnId) {
-            case FIELD_ID:          return 70.0;
-            case FIELD_PRIORITY:    return 120.0;
-            case FIELD_STATE:       return 170.0;
-            case FIELD_NAME:        return 620.0;
+            case FIELD_ID:          return 70;
+            case FIELD_PRIORITY:    return 120;
+            case FIELD_STATE:       return 170;
+            case FIELD_NAME:        return 620;
         }
         return COLUMN_WIDTH_DEFAULT;
     }
