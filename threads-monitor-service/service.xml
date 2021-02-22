@@ -7,7 +7,7 @@
     <!-- настройки отображения таблицы процессов -->
     <entity name="ThreadTableProps" table="planner.thread_ThreadTableProps" local-service="true" remote-service="true">
         <column name="userId"       type="long"     primary="true" />   <!-- id пользователя -->
-        <column name="columnId"     type="int"      primary="true" />   <!-- id поля поля -->
+        <column name="columnId"     type="String"   primary="true" />   <!-- id поля поля -->
         <column name="show"         type="boolean"                 />   <!-- признак показывать/непоказывать -->
         <column name="sortType"     type="int"                     />   <!-- тип сортировки (0-не сортировать, 1-по возрастанию, 2-по убыванию) -->
         <column name="width"        type="double"                  />   <!-- ширина колонки -->

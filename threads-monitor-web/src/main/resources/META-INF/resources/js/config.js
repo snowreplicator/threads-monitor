@@ -5,7 +5,6 @@
     if (!Liferay.SnowReplicator.ThreadsMonitor.Util) Liferay.SnowReplicator.ThreadsMonitor.Util = new Object();
     if (!Liferay.SnowReplicator.ThreadsMonitor.Tabulator) Liferay.SnowReplicator.ThreadsMonitor.Tabulator = new Object();
 
-
     AUI().applyConfig({
         groups: {
 
@@ -24,7 +23,7 @@
                         requires: ['aui-base']
                     },
 
-                    'main-js': {
+                    'threads-monitor-main-js': {
                         path: 'main.js' + '?v=' + new Date().getTime(),
                         requires: [
                             'aui-base',

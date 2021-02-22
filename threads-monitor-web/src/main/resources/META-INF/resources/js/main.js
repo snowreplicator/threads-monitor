@@ -1,5 +1,5 @@
 AUI.add(
-    'main-js',
+    'threads-monitor-main-js',
     function (A) {
 
         var Lang = A.Lang;
@@ -205,7 +205,7 @@ AUI.add(
             }
         );
 
-        Liferay.SnowReplicator.ThreadsMonitor.Web.MainJS = MainJS;
+        Liferay.SnowReplicator.ThreadsMonitor.MainJS = MainJS;
     },
     '',
     {

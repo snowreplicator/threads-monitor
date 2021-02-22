@@ -1,5 +1,6 @@
 package ru.snowreplicator.threads_monitor.portlet;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -9,7 +10,10 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 
+import ru.snowreplicator.threads_monitor.constants.ThreadsMonitorConst;
 import ru.snowreplicator.threads_monitor.constants.ThreadsMonitorKeys;
+import ru.snowreplicator.threads_monitor.model.ThreadTableProps;
+import ru.snowreplicator.threads_monitor.service.ThreadTablePropsLocalServiceUtil;
 
 public class ActionUtil {
 
@@ -32,39 +36,16 @@ public class ActionUtil {
 
     // получить столбцы табулятора
     public static JSONObject getColumnsData(long userId, long groupId, Locale locale) {
+        List<ThreadTableProps> ThreadTablePropsList = ThreadTablePropsLocalServiceUtil.getColumns(userId);
 
         JSONArray columnsJsonArray = JSONFactoryUtil.createJSONArray();
-
-        // title
-        {
+        for (ThreadTableProps ThreadTableProps : ThreadTablePropsList) {
             JSONObject columnJsonObject = JSONFactoryUtil.createJSONObject();
-            columnJsonObject.put("title", ThreadsMonitorKeys.translate(locale, "thread-title-id"));
-            columnJsonObject.put("field", "id");
-            columnJsonObject.put("sorter", "number");
-            columnsJsonArray.put(columnJsonObject);
-        }
-        // priority
-        {
-            JSONObject columnJsonObject = JSONFactoryUtil.createJSONObject();
-            columnJsonObject.put("title", ThreadsMonitorKeys.translate(locale, "thread-title-priority"));
-            columnJsonObject.put("field", "priority");
-            columnJsonObject.put("sorter", "number");
-            columnsJsonArray.put(columnJsonObject);
-        }
-        // state
-        {
-            JSONObject columnJsonObject = JSONFactoryUtil.createJSONObject();
-            columnJsonObject.put("title", ThreadsMonitorKeys.translate(locale, "thread-title-state"));
-            columnJsonObject.put("field", "state");
-            columnJsonObject.put("sorter", "string");
-            columnsJsonArray.put(columnJsonObject);
-        }
-        // name
-        {
-            JSONObject columnJsonObject = JSONFactoryUtil.createJSONObject();
-            columnJsonObject.put("title", ThreadsMonitorKeys.translate(locale, "thread-title-name"));
-            columnJsonObject.put("field", "name");
-            columnJsonObject.put("sorter", "string");
+            columnJsonObject.put("title",   ThreadsMonitorKeys.translate(locale, ThreadsMonitorConst.getColumnName(ThreadTableProps.getColumnId())));
+            columnJsonObject.put("field",   ThreadTableProps.getColumnId());
+            columnJsonObject.put("sorter",  ThreadsMonitorConst.getColumnSorter(ThreadTableProps.getColumnId()));
+            columnJsonObject.put("width",   ThreadsMonitorConst.getColumnWidth(ThreadTableProps.getWidth()));
+            columnJsonObject.put("dir",     ThreadsMonitorConst.getColumnSortDir(ThreadTableProps.getSortType()));
             columnsJsonArray.put(columnJsonObject);
         }
 
@@ -87,7 +68,7 @@ public class ActionUtil {
     // получить объект с данными для отображения табулятора со списком процессов (сериализованный в строку json)
     public static String threadsMonitorDataJsonString(long userId, long groupId, Locale locale) {
         JSONObject threadsMonitorDataJsonObject = threadsMonitorDataJsonObject(userId, groupId, locale);
-        _log.info("threadsMonitorDataJsonObject = " + threadsMonitorDataJsonObject.toJSONString());
+        _log.info("threadsMonitorDataJsonObject = " + threadsMonitorDataJsonObject.toJSONString()); // !!!!! delete
         return threadsMonitorDataJsonObject.toJSONString();
     }
 

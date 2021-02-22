@@ -3,7 +3,9 @@
 <model-hints>
 	<model name="ru.snowreplicator.threads_monitor.model.ThreadTableProps">
 		<field name="userId" type="long" />
-		<field name="columnId" type="int" />
+		<field name="columnId" type="String">
+			<hint name="max-length">5000</hint>
+		</field>
 		<field name="show" type="boolean" />
 		<field name="sortType" type="int" />
 		<field name="width" type="double" />
