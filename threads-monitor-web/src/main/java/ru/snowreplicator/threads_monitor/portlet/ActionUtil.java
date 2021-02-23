@@ -9,6 +9,7 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.LocaleUtil;
 
 import ru.snowreplicator.threads_monitor.constants.ThreadsMonitorConst;
 import ru.snowreplicator.threads_monitor.constants.ThreadsMonitorKeys;
@@ -36,8 +37,37 @@ public class ActionUtil {
         return threadsJsonArray;
     }
 
+    // получить ID локали
+    public static String getLanguageId(Locale locale) {
+        String languageId = LocaleUtil.toLanguageId(locale);
+        return languageId;
+    }
+
+    // получить переводы элементов табулятора
+    public static JSONObject getLangs(Locale locale) {
+        JSONObject paginationParamsJsonObject = JSONFactoryUtil.createJSONObject();
+        paginationParamsJsonObject.put("page_size",      ThreadsMonitorKeys.translate(locale, "pagination-page-size"));
+        paginationParamsJsonObject.put("page_title",     ThreadsMonitorKeys.translate(locale, "pagination-page-title"));
+        paginationParamsJsonObject.put("first",          ThreadsMonitorKeys.translate(locale, "pagination-first"));
+        paginationParamsJsonObject.put("first_title",    ThreadsMonitorKeys.translate(locale, "pagination-first-title"));
+        paginationParamsJsonObject.put("last",           ThreadsMonitorKeys.translate(locale, "pagination-last"));
+        paginationParamsJsonObject.put("last_title",     ThreadsMonitorKeys.translate(locale, "pagination-last-title"));
+        paginationParamsJsonObject.put("prev",           ThreadsMonitorKeys.translate(locale, "pagination-prev"));
+        paginationParamsJsonObject.put("prev_title",     ThreadsMonitorKeys.translate(locale, "pagination-prev-title"));
+        paginationParamsJsonObject.put("next",           ThreadsMonitorKeys.translate(locale, "pagination-page-next"));
+        paginationParamsJsonObject.put("next_title",     ThreadsMonitorKeys.translate(locale, "pagination-page-next-title"));
+        paginationParamsJsonObject.put("all",            ThreadsMonitorKeys.translate(locale, "pagination-all"));
+
+        JSONObject paginationJsonObject = JSONFactoryUtil.createJSONObject();
+        paginationJsonObject.put("pagination", paginationParamsJsonObject);
+
+        JSONObject langsJsonObject = JSONFactoryUtil.createJSONObject();
+        langsJsonObject.put(LocaleUtil.toLanguageId(locale), paginationJsonObject);
+        return langsJsonObject;
+    }
+
     // получить столбцы табулятора
-    public static JSONObject getColumnsData(long userId, long groupId, Locale locale) {
+    public static JSONObject getColumnsData(long userId, Locale locale) {
         List<ThreadTableProps> ThreadTablePropsList = ThreadTablePropsLocalServiceUtil.getColumns(userId);
 
         JSONArray initialSortJsonArray = JSONFactoryUtil.createJSONArray();
@@ -68,13 +98,16 @@ public class ActionUtil {
     }
 
     // получить объект с данными для отображения табулятора со списком процессов
-    public static JSONObject threadsMonitorDataJsonObject(long userId, long groupId, Locale locale) {
+    public static JSONObject threadsMonitorDataJsonObject(long userId, Locale locale) {
         ThreadTableSettings threadTableSettings = ThreadTableSettingsLocalServiceUtil.fetchThreadTableSettings(userId);
         int pageSize = threadTableSettings == null ? ThreadsMonitorConst.MIN_PAGE_SIZE : threadTableSettings.getPageSize();
         JSONArray threadsData = getThreadsData();
-        JSONObject columnsData = getColumnsData(userId, groupId, locale);
+        JSONObject columnsData = getColumnsData(userId, locale);
+        JSONObject langsJsonObject = getLangs(locale);
 
         JSONObject threadsMonitorDataJsonObject = JSONFactoryUtil.createJSONObject();
+        threadsMonitorDataJsonObject.put("languageId",  getLanguageId(locale));
+        threadsMonitorDataJsonObject.put("langs",       langsJsonObject);
         threadsMonitorDataJsonObject.put("pageSize",    pageSize);
         threadsMonitorDataJsonObject.put("threadsData", threadsData);
         threadsMonitorDataJsonObject.put("columnsData", columnsData);
@@ -82,8 +115,8 @@ public class ActionUtil {
     }
 
     // получить объект с данными для отображения табулятора со списком процессов (сериализованный в строку json)
-    public static String threadsMonitorDataJsonString(long userId, long groupId, Locale locale) {
-        JSONObject threadsMonitorDataJsonObject = threadsMonitorDataJsonObject(userId, groupId, locale);
+    public static String threadsMonitorDataJsonString(long userId, Locale locale) {
+        JSONObject threadsMonitorDataJsonObject = threadsMonitorDataJsonObject(userId, locale);
         return threadsMonitorDataJsonObject.toJSONString();
     }
 

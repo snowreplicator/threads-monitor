@@ -2,7 +2,7 @@
 <%@page contentType="text/html;charset=UTF-8" language="java" pageEncoding="utf-8"%>
 
 <%
-    String threadsMonitorDataJsonString = ActionUtil.threadsMonitorDataJsonString(themeDisplay.getUserId(), themeDisplay.getScopeGroupId(), themeDisplay.getLocale());
+    String threadsMonitorDataJsonString = ActionUtil.threadsMonitorDataJsonString(themeDisplay.getUserId(), themeDisplay.getLocale());
 %>
 
     <div id="<portlet:namespace/>javaThreadsMonitorPortletWrapper">

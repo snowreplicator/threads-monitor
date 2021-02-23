@@ -112,7 +112,9 @@ AUI.add(
                             movableColumns:         true,
                             pagination:             'local',
                             paginationSize:         threadsMonitorData.pageSize,
-                            paginationSizeSelector: PAGINATION_SIZE_SELECTOR
+                            paginationSizeSelector: PAGINATION_SIZE_SELECTOR,
+                            languageId:             threadsMonitorData.languageId,
+                            langs:                  threadsMonitorData.langs
                         };
 
                         instance.drawTabulator(threadsMonitorDataConfiguration);
@@ -134,6 +136,7 @@ AUI.add(
                                 pagination:             threadsMonitorDataConfiguration.pagination,
                                 paginationSize:         threadsMonitorDataConfiguration.paginationSize,
                                 paginationSizeSelector: threadsMonitorDataConfiguration.paginationSizeSelector,
+                                langs:                  threadsMonitorDataConfiguration.langs,
                                 dataSorted: function (sorters, rows) {
                                     instance.dataSorted(sorters, rows);
                                 },
@@ -148,6 +151,7 @@ AUI.add(
                                 }
                             });
 
+                            threadsMonitorDataTable.setLocale(threadsMonitorDataConfiguration.languageId);
                             instance.set('threadsMonitorDataTable', threadsMonitorDataTable);
                         });
                     },
