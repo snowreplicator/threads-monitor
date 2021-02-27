@@ -17,6 +17,7 @@ DO $$
         create table if not exists /*your_schema.*/thread_threadtablesettings (
           userid bigint not null,
           pagesize integer,
+          groupcolumn text,
           constraint thread_threadtablesettings_pkey primary key (userid)
         )
         with (

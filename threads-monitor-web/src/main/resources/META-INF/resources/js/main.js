@@ -91,7 +91,77 @@ AUI.add(
                         var contentBox = instance.get('contentBox');
                         var namespace = instance.get('namespace');
 
-                        contentBox.delegate('click',    instance._onClickLoadThreadsData,        '.load-threads-data-btn',             instance);
+                        contentBox.delegate('click',    instance._onClickLoadThreadsData,        '.load-threads-data-btn',              instance);
+                        contentBox.delegate('change',   instance._onChangeGrouping,              '#' + namespace + 'tabulatorGrouping', instance); // изменение группировки
+                    },
+
+                    // изменение группировки
+                    _onChangeGrouping: function (event) {
+                        var instance = this;
+                        var namespace = instance.get('namespace');
+                        var contentBox = instance.get('contentBox');
+                        var groupElm = contentBox.one('#' + namespace + 'tabulatorGrouping');
+                        if (groupElm) {
+                            var selGroup = groupElm.get('value');
+                            instance.saveColumnGrouping(selGroup);
+                            instance.setTabulatorGrouping(selGroup);
+                        }
+                    },
+
+                    // сохранить выбранную групировку
+                    saveColumnGrouping: function (groupColumn) {
+                        var data = {};
+                        data['/thread.threadtablesettings/save-column-grouping'] = { groupColumn: groupColumn };
+
+                        Util.invokeService(data, {
+                            failure: function(event) {
+                            },
+                            success: function() {
+                            }
+                        });
+                    },
+
+                    // задать группировку данных табулятора по указаному столбцу
+                    setTabulatorGrouping: function (groupColumn) {
+                        var instance = this;
+                        var threadsMonitorDataTable = instance.get('threadsMonitorDataTable');
+                        if (threadsMonitorDataTable) {
+                            threadsMonitorDataTable.setGroupBy(groupColumn);
+                            instance.showAllTabulatorColumns();
+                            if (groupColumn.length > 0) {
+                                instance.showHideTabulatorColumn(groupColumn, false);
+                            }
+                        }
+                    },
+
+                    // показать/спрятать указанный столбец табулятора
+                    showHideTabulatorColumn: function (columnId, showHide) {
+                        if (columnId && columnId.length > 0) {
+                            var instance = this;
+                            var threadsMonitorDataTable = instance.get('threadsMonitorDataTable');
+                            if (threadsMonitorDataTable) {
+                                var column = threadsMonitorDataTable.getColumn(columnId);
+                                if (column) {
+                                    if (showHide === true) {
+                                        column.show();
+                                    } else {
+                                        column.hide();
+                                    }
+                                }
+                            }
+                        }
+                    },
+
+                    // показать все столбцы табулятора
+                    showAllTabulatorColumns: function () {
+                        var instance = this;
+                        var threadsMonitorDataTable = instance.get('threadsMonitorDataTable');
+                        if (threadsMonitorDataTable) {
+                            var columns = threadsMonitorDataTable.getColumns()
+                            for (var i = 0; i < columns.length; i++) {
+                                columns[i].show();
+                            }
+                        }
                     },
 
                     // действия после загрузки
@@ -114,7 +184,8 @@ AUI.add(
                             paginationSize:         threadsMonitorData.pageSize,
                             paginationSizeSelector: PAGINATION_SIZE_SELECTOR,
                             languageId:             threadsMonitorData.languageId,
-                            langs:                  threadsMonitorData.langs
+                            langs:                  threadsMonitorData.langs,
+                            groupBy:                threadsMonitorData.groupingColumn
                         };
 
                         instance.drawTabulator(threadsMonitorDataConfiguration);
@@ -137,6 +208,7 @@ AUI.add(
                                 paginationSize:         threadsMonitorDataConfiguration.paginationSize,
                                 paginationSizeSelector: threadsMonitorDataConfiguration.paginationSizeSelector,
                                 langs:                  threadsMonitorDataConfiguration.langs,
+                                groupBy:                threadsMonitorDataConfiguration.groupBy,
                                 dataSorted: function (sorters, rows) {
                                     instance.dataSorted(sorters, rows);
                                 },
@@ -153,6 +225,8 @@ AUI.add(
 
                             threadsMonitorDataTable.setLocale(threadsMonitorDataConfiguration.languageId);
                             instance.set('threadsMonitorDataTable', threadsMonitorDataTable);
+
+                            instance.showHideTabulatorColumn(threadsMonitorDataConfiguration.groupBy, false);
                         });
                     },
 

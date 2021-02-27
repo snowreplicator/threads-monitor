@@ -28,7 +28,7 @@ import ru.snowreplicator.threads_monitor.constants.ThreadsMonitorKeys;
         property = {
                 "com.liferay.portlet.display-category=category.snowreplicator",
                 "com.liferay.portlet.css-class-wrapper=threads-monitor-portlet",
-                "com.liferay.portlet.header-portlet-css=/css/main.css?v=2021_02_14___2",
+                "com.liferay.portlet.header-portlet-css=/css/main.css?v=2021_02_14___4",
                 "com.liferay.portlet.instanceable=false",
                 "com.liferay.portlet.add-default-resource=true",
                 "javax.portlet.display-name=Threads Monitor Portlet",

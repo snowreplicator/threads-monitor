@@ -98,5 +98,38 @@ public class ThreadsMonitorConst {
     // минимальное количество записей на странице табулятора
     public final static int MIN_PAGE_SIZE = 5;
 
+    // константы полей табулятора для группировки
+    public final static String FIELD_GROUP_NONE = "";         // группировка отключена
+
+    // получить массив полей табулятора для группировки
+    public static String[] getGroupColumns() {
+        String columns[] = { FIELD_ID, FIELD_PRIORITY, FIELD_STATE, FIELD_NAME };
+        String groupColumns[] = new String[columns.length + 1];
+        int index = 0;
+        groupColumns[index] = FIELD_GROUP_NONE;
+        for (String column : columns) {
+            index++;
+            groupColumns[index] = column;
+        }
+        return groupColumns;
+    }
+
+    // получить наименование поля группировки по его id
+    public static String getGroupColumnName(String groupColumnId) {
+        switch (groupColumnId) {
+            case FIELD_GROUP_NONE:  return "group-by-none";
+            case FIELD_ID:          return "group-by-id";
+            case FIELD_PRIORITY:    return "group-by-priority";
+            case FIELD_STATE:       return "group-by-state";
+            case FIELD_NAME:        return "group-by-name";
+        }
+        return "unknown-group-field";
+    }
+
+    // проверка валидного задания поля для группировки
+    public static boolean validateGroupColumnId(String groupColumnId) {
+        String groupColumns[] = getGroupColumns();
+        return Arrays.asList(groupColumns).contains(groupColumnId);
+    }
 
 }

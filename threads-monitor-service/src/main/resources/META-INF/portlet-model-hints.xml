@@ -14,5 +14,8 @@
 	<model name="ru.snowreplicator.threads_monitor.model.ThreadTableSettings">
 		<field name="userId" type="long" />
 		<field name="pageSize" type="int" />
+		<field name="groupColumn" type="String">
+			<hint name="max-length">5000</hint>
+		</field>
 	</model>
 </model-hints>

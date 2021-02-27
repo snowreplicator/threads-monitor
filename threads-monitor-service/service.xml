@@ -23,7 +23,8 @@
     <entity name="ThreadTableSettings" table="planner.thread_ThreadTableSettings" local-service="true" remote-service="true">
         <column name="userId"       type="long"     primary="true" />   <!-- id пользователя -->
         <column name="pageSize"     type="int"                     />   <!-- кол-во строк отображаемых на странице -->
-        
+        <column name="groupColumn"  type="String"                  />   <!-- группировка по указанному столбу табулятора -->
+
         <!-- поиск по id юзера -->
         <finder name="UserId" return-type="ThreadTableSettings" unique="true">
             <finder-column name="userId" /> 
@@ -34,6 +35,7 @@
         <exception>WrongColumnId</exception>
         <exception>WrongColumnsOrder</exception>
         <exception>WrongPageSize</exception>
+        <exception>WrongGroupColumnId</exception>
     </exceptions>
 
 </service-builder>

@@ -5,6 +5,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 
 import ru.snowreplicator.threads_monitor.constants.ThreadsMonitorConst;
+import ru.snowreplicator.threads_monitor.exception.WrongGroupColumnIdException;
 import ru.snowreplicator.threads_monitor.exception.WrongPageSizeException;
 import ru.snowreplicator.threads_monitor.model.ThreadTableSettings;
 import ru.snowreplicator.threads_monitor.service.base.ThreadTableSettingsLocalServiceBaseImpl;
@@ -33,6 +34,21 @@ public class ThreadTableSettingsLocalServiceImpl extends ThreadTableSettingsLoca
             threadTableSettings.setPageSize(pageSize);
             threadTableSettings = threadTableSettingsPersistence.update(threadTableSettings);
         }
+        return threadTableSettings;
+    }
+
+    // сохранить настройку выбора группировки
+    public ThreadTableSettings saveColumnGrouping(String  groupColumn, long userId) throws PortalException {
+        if (!ThreadsMonitorConst.validateGroupColumnId(groupColumn)) throw new WrongGroupColumnIdException();
+
+        ThreadTableSettings threadTableSettings = fetchThreadTableSettings(userId);
+        if (threadTableSettings == null) {
+            threadTableSettings = getEmptyObject();
+            threadTableSettings.setUserId(userId);
+        }
+        threadTableSettings.setGroupColumn(groupColumn);
+
+        threadTableSettings = threadTableSettingsPersistence.update(threadTableSettings);
         return threadTableSettings;
     }
 

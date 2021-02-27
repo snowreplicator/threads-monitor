@@ -58,8 +58,13 @@ public class ActionUtil {
         paginationParamsJsonObject.put("next_title",     ThreadsMonitorKeys.translate(locale, "pagination-page-next-title"));
         paginationParamsJsonObject.put("all",            ThreadsMonitorKeys.translate(locale, "pagination-all"));
 
+        JSONObject groupsParamsJsonObject = JSONFactoryUtil.createJSONObject();
+        groupsParamsJsonObject.put("item",           ThreadsMonitorKeys.translate(locale, "group-item"));
+        groupsParamsJsonObject.put("items",          ThreadsMonitorKeys.translate(locale, "group-items"));
+
         JSONObject paginationJsonObject = JSONFactoryUtil.createJSONObject();
         paginationJsonObject.put("pagination", paginationParamsJsonObject);
+        paginationJsonObject.put("groups", groupsParamsJsonObject);
 
         JSONObject langsJsonObject = JSONFactoryUtil.createJSONObject();
         langsJsonObject.put(LocaleUtil.toLanguageId(locale), paginationJsonObject);
@@ -97,6 +102,16 @@ public class ActionUtil {
         return columnsJsonObject;
     }
 
+    // получить настройку столбца табулятора по которому выполнять группировку
+    public static String getGroupingColumn(long userId) {
+        String groupingColumn = ThreadsMonitorConst.FIELD_GROUP_NONE;
+        ThreadTableSettings threadTableSettings = ThreadTableSettingsLocalServiceUtil.fetchThreadTableSettings(userId);
+        if (threadTableSettings != null) {
+            groupingColumn = threadTableSettings.getGroupColumn();
+        }
+        return groupingColumn;
+    }
+
     // получить объект с данными для отображения табулятора со списком процессов
     public static JSONObject threadsMonitorDataJsonObject(long userId, Locale locale) {
         ThreadTableSettings threadTableSettings = ThreadTableSettingsLocalServiceUtil.fetchThreadTableSettings(userId);
@@ -106,11 +121,12 @@ public class ActionUtil {
         JSONObject langsJsonObject = getLangs(locale);
 
         JSONObject threadsMonitorDataJsonObject = JSONFactoryUtil.createJSONObject();
-        threadsMonitorDataJsonObject.put("languageId",  getLanguageId(locale));
-        threadsMonitorDataJsonObject.put("langs",       langsJsonObject);
-        threadsMonitorDataJsonObject.put("pageSize",    pageSize);
-        threadsMonitorDataJsonObject.put("threadsData", threadsData);
-        threadsMonitorDataJsonObject.put("columnsData", columnsData);
+        threadsMonitorDataJsonObject.put("languageId",          getLanguageId(locale));
+        threadsMonitorDataJsonObject.put("langs",               langsJsonObject);
+        threadsMonitorDataJsonObject.put("pageSize",            pageSize);
+        threadsMonitorDataJsonObject.put("threadsData",         threadsData);
+        threadsMonitorDataJsonObject.put("columnsData",         columnsData);
+        threadsMonitorDataJsonObject.put("groupingColumn",      getGroupingColumn(userId));
         return threadsMonitorDataJsonObject;
     }
 

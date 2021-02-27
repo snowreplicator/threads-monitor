@@ -21,4 +21,11 @@ public class ThreadTableSettingsServiceImpl extends ThreadTableSettingsServiceBa
         return threadTableSettings;
     }
 
+    // сохранить настройку выбора группировки
+    public ThreadTableSettings saveColumnGrouping(String  groupColumn, ServiceContext serviceContext) throws PortalException {
+        SessionUtil.setSessionThreadLocal(serviceContext);
+        ThreadTableSettings threadTableSettings = threadTableSettingsLocalService.saveColumnGrouping(groupColumn, getUserId());
+        return threadTableSettings;
+    }
+
 }
