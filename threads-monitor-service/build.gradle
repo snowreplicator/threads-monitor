@@ -20,3 +20,13 @@ buildService {
     propsUtil = "ru.snowreplicator.threads_monitor.service.util.PropsUtil"
     databaseNameMaxLength = 100
 }
+
+// имя выходного jar
+configurations {
+    jar.archiveName = jar.baseName + '.jar'
+}
+
+// сгенерировать md5
+jar.doLast { task ->
+    ant.checksum file: task.archivePath
+}

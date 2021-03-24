@@ -16,3 +16,13 @@ dependencies {
     
     compileOnly project(":modules:threads-monitor:threads-monitor-api")
 }
+
+// имя выходного jar
+configurations {
+    jar.archiveName = jar.baseName + '.jar'
+}
+
+// сгенерировать md5
+jar.doLast { task ->
+    ant.checksum file: task.archivePath
+}
